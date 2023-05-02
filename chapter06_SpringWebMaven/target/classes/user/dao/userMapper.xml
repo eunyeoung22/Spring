@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="userSQL">
+ 
+ 	
+ 	<insert id ="write" parameterType="user.bean.UserDTO">
+ 		INSERT INTO USERTABLE values(#{name},#{id},#{pwd})
+ 	</insert>
+ 	
+ 	<select id="getUserList" parameterType="java.util.Map" resultType="user">
+ 		<![CDATA[SELECT * from(select rownum rn, tt.* from(SELECT * FROM USERTABLE)tt) WHERE rn>=#{startNum} AND rn<=#{endNum}]]>
+ 	</select>
+ 	<!-- 총글수 -->
+ 	<select id="getTotalA" resultType="int">
+ 		select count(*) from usertable 
+ 	</select>
+ 	<!-- 업로드 -->
+ 	<insert id="upload" parameterType="user.bean.UserDTO">
+ 		insert into userimage values(seq_userimage.nextval, #{imageName}, #{imageContent}, #{image1})
+ 	</insert>
+ 	
+ 	<select id="getImageList" resultType="userImage">
+ 		select * from USERIMAGE order by seq desc
+ 	</select>
+ 	
+ 	<select id="getUser" parameterType="String" resultType="user">
+ 		select * from usertable where id=#{id}
+ 	</select>
+ 	
+ 	<update id="update" parameterType="java.util.Map">
+ 		update usertable set name=#{name}, pwd=#{pwd} where id=#{id} 
+ 	</update>
+ 	
+ 	<delete id="delete" parameterType="String">
+ 		delete usertable where id=#{id}
+ 	</delete>
+ 	
+ 	<select id="search" parameterType="java.util.Map" resultType="user">
+ 		select * from usertable where name like '%'||#{name}||'%' and id like '%'||#{id}||'%'
+ 		
+ 		<!-- select * from usertable where ${columnName} like '%'||#{value}||'%' 
+ 										'$'문자열로 인식 "name" 또는 "id"로 인식 가능함-->
+ 		<!-- xml(if문)
+ 			select * from usertable where
+ 			<if test="columnName == 'name'">
+ 				name like '%'|| #{value} ||'%'
+ 			</if>
+ 			<if test="columnName == 'id'">
+ 				id like '%'|| #{value} ||'%'
+ 			</if>
+ 		 -->
+ 		 
+ 		 <!-- xml(choose문)
+ 			select * from usertable where
+ 			<choose>
+ 				<when test="columnName == 'name'">
+ 					name like '%'|| #{value} ||'%'
+ 				</when>
+ 				<otherwise> 
+ 					id like '%'|| #{value} ||'%'
+ 				</otherwise>
+ 			</choose>
+ 		 -->
+ 	</select>
+ </mapper>
